@@ -1,0 +1,38 @@
+version: "2"
+services:
+  postgres92:
+    container_name: postgres92
+    image: avitotech/postgresql-demo-9.2.20
+    command: postgres -h 0.0.0.0 -c fsync=off
+    ports:
+      - "5432:5432"
+
+  pgq:
+    container_name: pgq
+    image: avitotech/pgq-demo-9.2.20
+    environment:
+      PGQADM_JOB_NAME: xrpc_job
+      PGQADM_DB_DSN: dbname=template1 user=postgres host=postgres92 port=5432
+      PGQADM_MAINT_DELAY: "600"
+      PGQADM_LOOP_DELAY: "0.3"
+      PGQADM_QUEUES: |
+        xrpc_queue
+    depends_on:
+      - "postgres92"
+    entrypoint: /entrypoint.sh postgres92
+
+  xrpcd:
+    container_name: xrpcd
+    image: avitotech/xrpcd
+    build: .
+    environment:
+      JOB_NAME: xrpc_job
+      QUEUE_NAME: xrpc_queue
+      PROVIDER_DB_NAME: template1
+      PROVIDER_DB_DSN: dbname=%(provider_db_name)s host=postgres92 user=postgres
+      XRPC_DSN: dbname={0} host=postgres92 user=postgres port=5432
+      XRPC_SOURCE: xrpc_source_marker
+    depends_on:
+      - "postgres92"
+      - "pgq"
+    entrypoint: /entrypoint.sh postgres92

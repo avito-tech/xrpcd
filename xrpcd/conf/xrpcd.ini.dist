@@ -1,0 +1,20 @@
+[xrpcd]
+job_name = ${JOB_NAME}
+
+log_path = /var/log/postgresql
+pid_path = /var/run/postgresql
+
+provider_db_name = ${PROVIDER_DB_NAME}
+provider_db = ${PROVIDER_DB_DSN}
+xrpc_dsn = ${XRPC_DSN}
+xrpc_source = ${XRPC_SOURCE}
+
+pgq_queue_name = ${QUEUE_NAME}
+
+# no need to use logfile in container environment
+# logfile = %(log_path)s/xrpcd-%(job_name)s.log
+pidfile = %(pid_path)s/xrpcd-%(job_name)s.pid
+
+# 10 MB * 10 = 100 MB total
+log_size = 10485760
+log_count = 10

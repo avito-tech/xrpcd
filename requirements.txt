@@ -1,0 +1,4 @@
+# Requirements for this package is contained in `skytools` deb package.
+# `psycopg2` will be installed as a dependency of `skytools`.
+#
+# Thank you for patience.
